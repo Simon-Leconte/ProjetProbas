@@ -36,3 +36,22 @@ def distance(discretization):
 distance_matrix=distance(discretization)
 
 ###Question 3
+def gauss(unknown_indexes):
+    n=len(unknown_indexes)
+    return np.random.normal(0,1,n)
+
+def cholesky(A):
+    """Renvoie une matrice B telle que B.B^T=A """
+    return np.linalg.cholesky(A)
+
+def simulation(mu,sigma2,a,unknown_indexes):
+    #Ne fonctionne pas encore, problème à l'extraction
+    n=len(unknown_indexes)
+    Y=gauss(unknown_indexes)
+    M=mu*np.ones(n)
+    C=covariance(distance_matrix[unknown_indexes,unknown_indexes],a,sigma2)
+    print("C=",C)
+    print("D=",distance_matrix)
+    print("Restriction =",distance_matrix[unknown_indexes,unknown_indexes])
+    R=cholesky(C)
+    return M+R.dot(Y)

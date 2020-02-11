@@ -36,6 +36,16 @@ def distance(discretization):
 distance_matrix=distance(discretization)
 
 ###Question 3
+
+def extraction(M,lines,columns):
+    L=M[lines]   #L est la matrice des lignes qu'on veut extraire
+    n=len(lines)
+    m=len(columns)
+    N=np.zeros((n,m))
+    for i in range(m):
+        N[i]=L[i][columns]
+    return N
+
 def gauss(unknown_indexes):
     n=len(unknown_indexes)
     return np.random.normal(0,1,n)
@@ -49,9 +59,27 @@ def simulation(mu,sigma2,a,unknown_indexes):
     n=len(unknown_indexes)
     Y=gauss(unknown_indexes)
     M=mu*np.ones(n)
-    C=covariance(distance_matrix[unknown_indexes,unknown_indexes],a,sigma2)
+    C=covariance(extraction(distance_matrix,unknown_indexes,unknown_indexes),a,sigma2)#j'ai essayer ici de résoudre le problème de l'extraction
     print("C=",C)
     print("D=",distance_matrix)
-    print("Restriction =",distance_matrix[unknown_indexes,unknown_indexes])
+    print("Restriction =",extraction(distance_matrix,unknown_indexes,unknown_indexes))
     R=cholesky(C)
     return M+R.dot(Y)
+
+
+
+###Question 4
+
+
+def ext_cov_observations(M,observation_indexes):
+    """Extrait la matrice de covariance entre les observations à partir de M """
+    return extraction(M,observation_indexes,observation_indexes)
+
+
+def ext_cov_observations_unkuwns(M,observation_indexes,unknown_indexes):
+    """Extrait la matrice de covariance entre les observations et les inconnues à partir de M """
+    return extraction(M,observation_indexes,unknown_indexes)
+
+def ext_cov_unkuwns(M,unknown_indexes):
+    """Extrait la matrice de covariance entre les inconnues à partir de M """
+    return extraction(M,unknown_indexes,unknown_indexes)

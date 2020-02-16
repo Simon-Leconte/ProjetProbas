@@ -69,18 +69,18 @@ C=covariance(distance_matrix,a,sigma2)
 #Question 4
 
 
-def ext_cov_observations(M):
-    """Extrait la matrice de covariance entre les observations à partir de M """
-    return extraction(M,observation_indexes,observation_indexes)
+def ext_cov_observations(C):
+    """Extrait la matrice de covariance entre les observations à partir de C """
+    return extraction(C,observation_indexes,observation_indexes)
 
 
-def ext_cov_observations_unkuwns(M):
-    """Extrait la matrice de covariance entre les observations et les inconnues à partir de M """
-    return extraction(M,observation_indexes,unknown_indexes)
+def ext_cov_observations_unkuwns(C):
+    """Extrait la matrice de covariance entre les observations et les inconnues à partir de C """
+    return extraction(C,observation_indexes,unknown_indexes)
 
-def ext_cov_unkuwns(M):
-    """Extrait la matrice de covariance entre les inconnues à partir de M """
-    return extraction(M,unknown_indexes,unknown_indexes)
+def ext_cov_unkuwns(C):
+    """Extrait la matrice de covariance entre les inconnues à partir de C """
+    return extraction(C,unknown_indexes,unknown_indexes)
 
 #Question 5
 

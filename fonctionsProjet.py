@@ -101,10 +101,10 @@ def esp_cond(depth,mu):
     R=cholesky(C)
     R_observation=extraction(R,observation_indexes,observation_indexes)
     standard_normal_observation=np.linalg.solve(R_observation,depth-np.array([mu]*n)) #C'est les valeurs de Y[i] (pour i dans observation_indexes) pour lesquelles Z[i]=l'observation
-    z=np.array([0.0]*N)
+    Y=np.array([0.0]*N)
     for i in range(n):
         z[observation_indexes[i]]=standard_normal_observation[i]
-    return np.array([mu]*N)+R.dot(z)
+    return np.array([mu]*N)+R.dot(Y)
 
 esp=esp_cond(depth,mu)
 

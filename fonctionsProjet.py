@@ -64,7 +64,7 @@ def simulation(mu,sigma2,a,unknown_indexes):
     R=cholesky(C)
     return M+R.dot(Y)
 
-
+C=covariance(distance_matrix,a,sigma2)
 
 #Question 4
 

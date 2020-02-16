@@ -56,14 +56,10 @@ def cholesky(A):
     return np.linalg.cholesky(A)
 
 def simulation(mu,sigma2,a,unknown_indexes):
-    #Ne fonctionne pas encore, problème à l'extraction
     n=len(unknown_indexes)
     Y=gauss(unknown_indexes)
     M=mu*np.ones(n)
-    C=covariance(extraction(distance_matrix,unknown_indexes,unknown_indexes),a,sigma2)#j'ai essayé ici de résoudre le problème de l'extraction
-    print("C=",C)
-    print("D=",distance_matrix)
-    print("Restriction =",extraction(distance_matrix,unknown_indexes,unknown_indexes))
+    C=covariance(extraction(distance_matrix,unknown_indexes,unknown_indexes),a,sigma2)
     R=cholesky(C)
     return M+R.dot(Y)
 
@@ -77,11 +73,11 @@ def ext_cov_observations(M,observation_indexes):
     return extraction(M,observation_indexes,observation_indexes)
 
 
-def ext_cov_observations_unkuwns(M,observation_indexes,unknown_indexes):
+def ext_cov_observations_unknown(M,observation_indexes,unknown_indexes):
     """Extrait la matrice de covariance entre les observations et les inconnues à partir de M """
     return extraction(M,observation_indexes,unknown_indexes)
 
-def ext_cov_unkuwns(M,unknown_indexes):
+def ext_cov_unknown(M,unknown_indexes):
     """Extrait la matrice de covariance entre les inconnues à partir de M """
     return extraction(M,unknown_indexes,unknown_indexes)
 

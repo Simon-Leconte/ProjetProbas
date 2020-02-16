@@ -57,14 +57,10 @@ def cholesky(A):
     return np.linalg.cholesky(A)
 
 def simulation(mu,sigma2,a,unknown_indexes):
-    #Ne fonctionne pas encore, problème à l'extraction
     n=len(unknown_indexes)
     Y=gauss(unknown_indexes)
     M=mu*np.ones(n)
-    C=covariance(extraction(distance_matrix,unknown_indexes,unknown_indexes),a,sigma2)#j'ai essayé ici de résoudre le problème de l'extraction
-    print("C=",C)
-    print("D=",distance_matrix)
-    print("Restriction =",extraction(distance_matrix,unknown_indexes,unknown_indexes))
+    C=covariance(extraction(distance_matrix,unknown_indexes,unknown_indexes),a,sigma2)
     R=cholesky(C)
     return M+R.dot(Y)
 

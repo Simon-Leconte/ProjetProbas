@@ -103,7 +103,7 @@ def esp_cond(depth,mu):
     standard_normal_observation=np.linalg.solve(R_observation,depth-np.array([mu]*n)) #C'est les valeurs de Y[i] (pour i dans observation_indexes) pour lesquelles Z[i]=l'observation
     Y=np.array([0.0]*N)
     for i in range(n):
-        z[observation_indexes[i]]=standard_normal_observation[i]
+        Y[observation_indexes[i]]=standard_normal_observation[i]
     return np.array([mu]*N)+R.dot(Y)
 
 esp=esp_cond(depth,mu)

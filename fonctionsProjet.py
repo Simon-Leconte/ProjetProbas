@@ -54,15 +54,15 @@ def extraction(M,lines,columns):
         T[i]=L[i][columns]
     return T
 
-def ext_cov_observations(M):
-    """Extrait la matrice de covariance entre les observations à partir de M """
-    return extraction(M,observation_indexes,observation_indexes)
+def ext_cov_observations(C):
+    """Extrait la matrice de covariance entre les observations à partir de C """
+    return extraction(C,observation_indexes,observation_indexes)
 
 CY=ext_cov_observations(C)
 
-def ext_cov_observations_unkuwns(M):
-    """Extrait la matrice de covariance entre les observations et les inconnues à partir de M """
-    return extraction(M,observation_indexes,unknown_indexes)
+def ext_cov_observations_unkuwns(C):
+    """Extrait la matrice de covariance entre les observations et les inconnues à partir de C """
+    return extraction(C,observation_indexes,unknown_indexes)
 
 CYX=ext_cov_observations_unkuwns(C)
 

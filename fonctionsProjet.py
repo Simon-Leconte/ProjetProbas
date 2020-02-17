@@ -1,9 +1,10 @@
 import numpy as np
 import math
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
-A=0
+A=0.0
 B=500
 N=101
 Delta= (B-A)/(N-1)
@@ -38,81 +39,183 @@ distance_matrix=distance(discretization)
 
 #Question 3
 
+C=covariance(distance_matrix,a,sigma2)
+
+
+#Question 4
+
 def extraction(M,lines,columns):
     #cette fonction est aussi utilisée dans la question 4
     L=M[lines]   #L est la matrice des lignes qu'on veut extraire
     n=len(lines)
     m=len(columns)
-    N=np.zeros((n,m))
-    for i in range(m):
-        N[i]=L[i][columns]
-    return N
-
-def gauss(unknown_indexes):
-    n=len(unknown_indexes)
-    return np.random.normal(0,1,n)
-
-def cholesky(A):
-    """Renvoie une matrice B telle que B.B^T=A """
-    return np.linalg.cholesky(A)
-
-def simulation(mu,sigma2,a,unknown_indexes):
-    n=len(unknown_indexes)
-    Y=gauss(unknown_indexes)
-    M=mu*np.ones(n)
-    C=covariance(extraction(distance_matrix,unknown_indexes,unknown_indexes),a,sigma2)
-    R=cholesky(C)
-    return M+R.dot(Y)
-
-
-
-#Question 4
-
+    T=np.zeros((n,m))
+    for i in range(n):
+        T[i]=L[i][columns]
+    return T
 
 def ext_cov_observations(M):
     """Extrait la matrice de covariance entre les observations à partir de M """
     return extraction(M,observation_indexes,observation_indexes)
 
+CY=ext_cov_observations(C)
 
 def ext_cov_observations_unkuwns(M):
     """Extrait la matrice de covariance entre les observations et les inconnues à partir de M """
     return extraction(M,observation_indexes,unknown_indexes)
 
+CYX=ext_cov_observations_unkuwns(C)
+
+CXY=np.transpose(CYX)
+
 def ext_cov_unkuwns(M):
     """Extrait la matrice de covariance entre les inconnues à partir de M """
     return extraction(M,unknown_indexes,unknown_indexes)
 
+CX=ext_cov_unkuwns(C)
+
 #Question 5
 
-"""def loi_condi_sachant_observation(x,y):
-    C=covariance(distance_matrix,a,sigma2)
-    CX=ext_cov_unkuwns(C)
-    CY=ext_cov_observations(C)
-    CXY= ext_cov_observations_unkuwns(C)
-    CSx = CX - (CXY.dot(numpy.linalg.inv(CY))).dot(CXY)
-    n=len(y)
-    Psi=mu*np.ones(N-n+1)- (CXY.dot(numpy.linalg.inv(CY))).dot(y-u*np.ones(N-n+1))
-    det=numpy.linalg.det(CSx)
-    return (np.exp((-0.5*np.transpose(x-psi).dot(numpy.linalg.inv(CSx))).dot(x-psi)))/(((2*np.pi)**((N-n+2)/2))*((det)**0.5))""" #C'est la methode de calcul directe saans utiliser la 3 question théorique
+n=len(depth)
+esp_cond_unkown_points=mu*np.ones(N-n)+ (CXY.dot(np.linalg.inv(CY))).dot(depth-mu*np.ones(n)) #on a directement la formule de l'esperence
 
-def esp_cond(depth,mu):
-    n=len(observation_indexes)
-    C=covariance(distance_matrix,a,sigma2)
-    R=cholesky(C)
-    R_observation=extraction(R,observation_indexes,observation_indexes)
-    standard_normal_observation=np.linalg.solve(R_observation,depth-np.array([mu]*n)) #C'est les valeurs de Y[i] (pour i dans observation_indexes) pour lesquelles Z[i]=l'observation
-    Y=np.array([0.0]*N)
+
+esp=np.zeros(N)
+j=0
+for i in range(N):
+    if i in observation_indexes:
+        esp[i]=depth[j]
+        j+=1
+    else:
+        esp[i]=esp_cond_unkown_points[i-j]
+
+
+
+
+#plt.plot(discretization,esp)
+#plt.show()
+
+#Question 6
+def covariance_cond_all(depth,mu):
+    return CX - np.dot(CXY,np.dot(np.linalg.inv(CY),CYX))
+
+def var_cond(depth,mu):
+    cov=covariance_cond_all(depth,mu)
+    var=np.zeros(N)
+    j=0
+    for i in range(N):
+        if i in observation_indexes:
+            j+=1
+        else:
+            var[i]=cov[i-j][i-j]
+    return var
+
+
+var=var_cond(depth,mu)
+
+
+#plt.plot(discretization,var)
+#plt.show()
+
+
+#Question7
+
+R = np.linalg.cholesky(covariance_cond_all(depth,mu))
+
+def simulation(mu,sigma2,a,unknown_indexes,depth):
+    Y = np.random.normal(0,1,N-n)
+    sim = esp_cond_unkown_points + R.dot(Y)
+    sim_all = np.zeros(N)
+    j=0
+    for i in range(N):
+        if i in observation_indexes:
+            sim_all[i] = depth[j]
+            j+=1
+        else:
+            sim_all[i]=sim[i-j]
+    return sim_all
+
+simu = simulation(mu,sigma2,a,unknown_indexes,depth)
+
+#plt.plot(discretization,simu)
+#plt.show()
+
+
+#Question8
+
+def length(depth_all,Delta):
+    length=0
+    for i in range(1,N):
+        z = depth_all[i]-depth_all[i-1]
+        length+=np.sqrt(Delta**2+z**2)
+    return length
+
+
+#Question9
+
+length_list = np.array([length(simulation(mu,sigma2,a,unknown_indexes,depth),Delta) for i in range(100)])
+
+length_expected_value = np.average(length_list)
+length_cond_expected_value = length(esp , Delta)
+
+print("la longueur du câble à partir de 100 simulations : ", length_expected_value)
+print("l’espérance conditionnelle de la longueur avec la longueur de l’espérance conditionnelle : ",length_cond_expected_value)
+print("la différence entre les deux est : ", np.abs(length_expected_value-length_cond_expected_value))
+print("la différence relative entre les deux est : ", (np.abs(length_expected_value-length_cond_expected_value)/min(length_cond_expected_value,length_expected_value))*100,"%")
+
+#on remarque toujours que la difference relative est de l'ordre de 0,04%
+
+
+#Question10
+
+def M(n):
+    expected_length = 0
     for i in range(n):
-        Y[observation_indexes[i]]=standard_normal_observation[i]
-    return np.array([mu]*N)+R.dot(Y)
+        expected_length += length(simulation(mu,sigma2,a,unknown_indexes,depth),Delta)/n
+    return expected_length
 
-esp=esp_cond(depth,mu)
+simulations_number = 100
 
-plt.plot(discretization,esp)
-plt.show()
+simulations_number_list = [i+1 for i in range(simulations_number)]
+length_list_n = np.array([M(i+1) for i in range(simulations_number)])
+
+#plt.plot(simulations_number_list,length_list_n)
+#plt.show()
+
+relative_error = (length_list_n/length_cond_expected_value - np.array([1.0]))*100
+
+#C'est l'erreur relative (en pourcentage) par rapport à l’espérance conditionnelle de la longueur avec la longueur de l’espérance conditionnelle
+
+#plt.plot(simulations_number_list,relative_error)
+#plt.show()
 
 
+#Question11
 
 
+df = pd.DataFrame(length_list_n,columns = ['longueur du câble'])
+res = df.plot.hist(bins=50)
+print(res)
+#plt.show()
 
 
+#Question12
+
+tolerance=0.95
+
+   #methode1
+
+
+   #methode2
+
+#Question13
+
+total_number = np.sum(res[0])
+max_length = np.max(res[1])
+k=len(res[0])
+prob=0
+for i in range(k):
+    if res[1][i] > 525:
+        prob+=res[0][i]/total_number
+
+print("une estimation de la probabilité que la longueur du câble dépasse 525 m est : ",prob)

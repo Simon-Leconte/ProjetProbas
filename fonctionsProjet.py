@@ -168,19 +168,21 @@ print("la différence relative entre les deux est : ", (np.abs(length_expected_v
 
 #Question10
 
-def M(n):
-    expected_length = 0
-    for i in range(n):
-        expected_length += length(simulation(mu,sigma2,a,unknown_indexes,depth),Delta)/n
-    return expected_length
+def list_M_n(n):
+    expected_length = length(simulation(mu,sigma2,a,unknown_indexes,depth),Delta)
+    list=[expected_length]
+    for i in range(1,n):
+        l = length(simulation(mu,sigma2,a,unknown_indexes,depth),Delta)
+        list += [(list[i-1]*i+l)/(i+1)]
+    return list
 
 simulations_number = 100
 
 simulations_number_list = [i+1 for i in range(simulations_number)]
-length_list_n = np.array([M(i+1) for i in range(simulations_number)])
+length_list_n = np.array(list_M_n(simulations_number))
 
-#plt.plot(simulations_number_list,length_list_n)
-#plt.show()
+plt.plot(simulations_number_list,length_list_n)
+plt.show()
 
 relative_error = (length_list_n/length_cond_expected_value - np.array([1.0]))*100
 
@@ -195,16 +197,27 @@ relative_error = (length_list_n/length_cond_expected_value - np.array([1.0]))*10
 
 df = pd.DataFrame(length_list_n,columns = ['longueur du câble'])
 res = df.plot.hist(bins=50)
-print(res)
 #plt.show()
 
 
 #Question12
 
-tolerance=0.95
+   #methode1 : pour cette premier methode on utilise  l'Intégrale de Monte-Carlo
+def sigma(n):
+    if n<simulations_number+1:
+        Mn=length_list_n[n-1] #pour optimiser le temps de calcul car length_list_n contient déja la valeur de M(n) pour n<=simulations_number
+    else:
+        Mn=list_M_n(n)[-1]
+    s2=0
+    for i in range(n):
+        hi=length(simulation(mu,sigma2,a,unknown_indexes,depth),Delta)
+        s2+=((hi-Mn)**2)/n
+    return np.sqrt(s2)
 
-   #methode1
+Mn = length_list_n[-1] #c'est M(simulations_number)
+sigma_n = sigma(simulations_number)
 
+print("un intervalle de confiance à 95% est : ","[",Mn-1.96*sigma_n," ; ",Mn+1.96*sigma_n,"]")
 
    #methode2
 
@@ -219,3 +232,7 @@ for i in range(k):
         prob+=res[0][i]/total_number
 
 print("une estimation de la probabilité que la longueur du câble dépasse 525 m est : ",prob)
+
+
+#Question14
+    #pour cette question il suffit de reprendre les quetions précédentes en remplacant la variable simulations_number par 1000,10000 et 100000

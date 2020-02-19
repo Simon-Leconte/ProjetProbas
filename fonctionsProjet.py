@@ -270,6 +270,6 @@ print("une estimation de la probabilité que la longueur du câble dépasse 525 
 
 
 #Question14
-    #pour cette question il suffit de reprendre les quetions précédentes en remplacant la variable simulations_number par 1000,10000 et 100000
+    #pour cette question il suffit de reprendre les quetions précédentes en remplacant la variable simulations_number (dans question9 par 1000,10000 et 100000
 
 

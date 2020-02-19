@@ -222,7 +222,7 @@ if simulations_number<1600:
 else: bin=simulations_number//40
 
 res = pd.DataFrame.hist(df,bins=bin)
-plt.show()
+#plt.show()
 
 
 #Question12
@@ -245,7 +245,20 @@ sigma_n = sigma(simulations_number)
 print("un intervalle de confiance à 95% est : ","[",Mn-1.96*sigma_n," ; ",Mn+1.96*sigma_n,"]")
 
    #methode2
-
+number_of_tests = 100
+def estimation_95(number_of_tests,length_list):
+    interv = np.zeros(2)
+    sorted_lengths_0 = np.sort(length_list)
+    for j in range(number_of_tests):
+        sorted_lengths = list(sorted_lengths_0)
+        for i in range(int(simulations_number*0.05)):
+            if Mn - sorted_lengths[0] < sorted_lengths[-1] - Mn:
+                del(sorted_lengths[-1])
+            else:
+                del(sorted_lengths[0])
+        interv += np.array([sorted_lengths[0],sorted_lengths[-1]])/number_of_tests
+    return interv
+print("un intervalle de confiance à 95% (avec la méthode 2) est : ","[",estimation_95(number_of_tests,length_list)[0]," ; ",estimation_95(number_of_tests,length_list)[1],"]")
 
 
 #Question13
@@ -258,3 +271,5 @@ print("une estimation de la probabilité que la longueur du câble dépasse 525 
 
 #Question14
     #pour cette question il suffit de reprendre les quetions précédentes en remplacant la variable simulations_number par 1000,10000 et 100000
+
+

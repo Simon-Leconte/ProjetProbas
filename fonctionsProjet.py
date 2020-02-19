@@ -152,8 +152,9 @@ def length(depth_all,Delta):
 
 
 #Question9
+simulations_number = 100
 
-length_list = np.array([length(simulation(mu,sigma2,a,unknown_indexes,depth),Delta) for i in range(100)])
+length_list = np.array([length(simulation(mu,sigma2,a,unknown_indexes,depth),Delta) for i in range(simulations_number)])
 
 length_expected_value = np.average(length_list)
 length_cond_expected_value = length(esp , Delta)
@@ -168,6 +169,18 @@ print("la différence relative entre les deux est : ", (np.abs(length_expected_v
 
 #Question10
 
+   #Pour cette questions on peut utiliser deux approche diffirentes :
+   #une consiste à chaque fois génerer M(n) Indépendamment de M(n-1) c-à-d à chaque fois régénérer tous les Xi c’est ce qu’on a fait en utilisant la fonction M
+   #La deuxième approche consiste à générer M(n) en utilisant M(n-1) en les stockant dans une liste c’est ce qu’on a fait en utilisant la fonction list_M_n
+   #La deuxsième mèthode est largement plus rapide que la première mais il ne donne pas une distribution normale contrairement  à la première
+
+def M(n):
+    expected_length = 0
+    for i in range(n):
+        expected_length += length(simulation(mu,sigma2,a,unknown_indexes,depth),Delta)/n
+    return expected_length
+
+
 def list_M_n(n):
     expected_length = length(simulation(mu,sigma2,a,unknown_indexes,depth),Delta)
     list=[expected_length]
@@ -176,13 +189,21 @@ def list_M_n(n):
         list += [(list[i-1]*i+l)/(i+1)]
     return list
 
-simulations_number = 100
 
 simulations_number_list = [i+1 for i in range(simulations_number)]
-length_list_n = np.array(list_M_n(simulations_number))
+length_list_n = np.array([M(i+1)for i in range(simulations_number)])
+length_list_n_methode_2 = np.array(list_M_n(simulations_number))
 
-plt.plot(simulations_number_list,length_list_n)
-plt.show()
+
+
+# la représentation des Mn en utilisant la première méthode
+#plt.plot(simulations_number_list,length_list_n)
+#plt.show()
+
+
+# la représentation des Mn en utilisant la deuxsième méthode
+#plt.plot(simulations_number_list,length_list_n_)
+#plt.show()
 
 relative_error = (length_list_n/length_cond_expected_value - np.array([1.0]))*100
 
@@ -196,8 +217,12 @@ relative_error = (length_list_n/length_cond_expected_value - np.array([1.0]))*10
 
 
 df = pd.DataFrame(length_list_n,columns = ['longueur du câble'])
-res = df.plot.hist(bins=50)
-#plt.show()
+if simulations_number<1600:
+    bin=40
+else: bin=simulations_number//40
+
+res = pd.DataFrame.hist(df,bins=bin)
+plt.show()
 
 
 #Question12
@@ -221,15 +246,12 @@ print("un intervalle de confiance à 95% est : ","[",Mn-1.96*sigma_n," ; ",Mn+1.
 
    #methode2
 
+
+
 #Question13
 
-total_number = np.sum(res[0])
-max_length = np.max(res[1])
-k=len(res[0])
-prob=0
-for i in range(k):
-    if res[1][i] > 525:
-        prob+=res[0][i]/total_number
+df1 = pd.DataFrame(length_list,columns = ['longueur du câble'])
+prob=len(df.loc[df1['longueur du câble']> 525,:])/simulations_number
 
 print("une estimation de la probabilité que la longueur du câble dépasse 525 m est : ",prob)
 

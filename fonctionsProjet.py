@@ -164,7 +164,7 @@ print("l’espérance conditionnelle de la longueur avec la longueur de l’esp�
 print("la différence entre les deux est : ", np.abs(length_expected_value-length_cond_expected_value))
 print("la différence relative entre les deux est : ", (np.abs(length_expected_value-length_cond_expected_value)/min(length_cond_expected_value,length_expected_value))*100,"%")
 
-#on remarque toujours que la difference relative est de l'ordre de 0,04%
+#on remarque toujours que la difference relative est de l'ordre de 4%
 
 
 #Question10

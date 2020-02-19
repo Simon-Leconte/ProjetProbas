@@ -216,13 +216,13 @@ relative_error = (length_list_n/length_cond_expected_value - np.array([1.0]))*10
 #Question11
 
 
-df = pd.DataFrame(length_list_n,columns = ['longueur du câble'])
+df = pd.DataFrame(length_list,columns = ['longueur du câble'])
 if simulations_number<1600:
-    bin=40
+    bin=20
 else: bin=simulations_number//40
 
 res = pd.DataFrame.hist(df,bins=bin)
-#plt.show()
+plt.show()
 
 
 #Question12

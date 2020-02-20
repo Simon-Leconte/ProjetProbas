@@ -248,9 +248,9 @@ print("un intervalle de confiance à 95% est : ","[",Mn-1.96*sigma_n," ; ",Mn+1.
 number_of_tests = 100
 def estimation_95(number_of_tests,length_list):
     interv = np.zeros(2)
-    sorted_lengths_0 = np.sort(length_list)
     for j in range(number_of_tests):
-        sorted_lengths = list(sorted_lengths_0)
+        l = np.array([length(simulation(mu,sigma2,a,unknown_indexes,depth),Delta) for i in range(simulations_number)])
+        sorted_lengths = list(np.sort(l))
         for i in range(int(simulations_number*0.05)):
             if Mn - sorted_lengths[0] < sorted_lengths[-1] - Mn:
                 del(sorted_lengths[-1])
@@ -264,7 +264,7 @@ print("un intervalle de confiance à 95% (avec la méthode 2) est : ","[",estima
 #Question13
 
 df1 = pd.DataFrame(length_list,columns = ['longueur du câble'])
-prob=len(df.loc[df1['longueur du câble']> 525,:])/simulations_number
+prob=len(df1.loc[df1['longueur du câble']> 525,:])/simulations_number
 
 print("une estimation de la probabilité que la longueur du câble dépasse 525 m est : ",prob)
 
